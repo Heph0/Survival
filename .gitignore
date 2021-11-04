@@ -53,5 +53,4 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Specific files
-Scenes.meta
 .DS_Store
