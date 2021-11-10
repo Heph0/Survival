@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public Animator animator;
-    public Rigidbody rb;
-    public float rotateSpeed;
-    public float movementSpeed;
-    public float jumpAmount;
-
+    private Animator animator;
+    private Rigidbody rb;
+    private float rotateSpeed;
+    private float movementSpeed;
+    private float jumpAmount;
     private float walkSpeed;
     private float sprintSpeed;
+    public bool isGrounded;
 
     private string animationPath = "Animation/BasicMotions/AnimationControllers/BasicMotions@";
 
@@ -31,13 +31,29 @@ public class Player : MonoBehaviour
         sprintSpeed = 6.0F;
         rotateSpeed = 3.0F;
         movementSpeed = walkSpeed;
-        jumpAmount = 10.0F;
+        jumpAmount = 5.0F;
     }
 
     // Update is called once per frame
     void Update()
     {
         Move(); 
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name == "PlayArea")
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.name == "PlayArea")
+        {
+            isGrounded = false;
+        }
     }
  
     public void Move()
@@ -75,6 +91,13 @@ public class Player : MonoBehaviour
                     transform.position += transform.forward * Time.deltaTime * movementSpeed;
                 if (Input.GetKey(KeyCode.S))
                     transform.position -= transform.forward * Time.deltaTime * movementSpeed;
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+                    rb.AddForce(transform.up * jumpAmount, ForceMode.Impulse);
+            }
+            else if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            {
+                animator.runtimeAnimatorController = Resources.Load(animationPath+"Jump") as RuntimeAnimatorController;
+                rb.AddForce(transform.up * jumpAmount, ForceMode.Impulse);
             }
 
             //Player rotates left/right
@@ -83,15 +106,8 @@ public class Player : MonoBehaviour
             else if (Input.GetKey(KeyCode.E))
                 transform.Rotate(0, 1 * rotateSpeed, 0);
 
-            //Player jumps
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                animator.runtimeAnimatorController = Resources.Load(animationPath+"Jump") as RuntimeAnimatorController;
-                transform.position += transform.up * Time.deltaTime * movementSpeed;
-            }
-
             //Player idling
-            if (!Input.anyKey)
+            if (!Input.anyKey && isGrounded)
                 animator.runtimeAnimatorController = Resources.Load(animationPath+"Idle") as RuntimeAnimatorController;
         }
     }
