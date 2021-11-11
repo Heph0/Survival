@@ -58,6 +58,7 @@ public class Player : MonoBehaviour
  
     public void Move()
     {
+        
         //player must have transform and rigidbody to move
         if (transform != null && rb != null)
         {
@@ -69,30 +70,36 @@ public class Player : MonoBehaviour
 
             if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
             {
-                if (!Input.GetKey(KeyCode.S))
-                {
-                    if (movementSpeed != sprintSpeed)
-                        animator.runtimeAnimatorController = Resources.Load(animationPath+"Run") as RuntimeAnimatorController;
-                    else
-                        animator.runtimeAnimatorController = Resources.Load(animationPath+"Sprint") as RuntimeAnimatorController;
-                }
-                else
-                {
-                    animator.runtimeAnimatorController = Resources.Load(animationPath+"RunBackwards") as RuntimeAnimatorController;
-                    movementSpeed = walkSpeed;
-                }
+                string movement0 = movementSpeed != sprintSpeed ? "Walk" : "Run";
+                string movement1 = "";
+                string movement2 = "";
 
                 //Player moves relative to the direction they are facing
                 if (Input.GetKey(KeyCode.A))
+                {
                     transform.position -= transform.right * Time.deltaTime * movementSpeed;
+                    movement2 = "Left";
+                }
                 if (Input.GetKey(KeyCode.D))
+                {
                     transform.position += transform.right * Time.deltaTime * movementSpeed;
+                    movement2 = "Right";
+                }
                 if (Input.GetKey(KeyCode.W))
+                {
                     transform.position += transform.forward * Time.deltaTime * movementSpeed;
+                    movement1 = "Forwards";
+                }
                 if (Input.GetKey(KeyCode.S))
+                {
                     transform.position -= transform.forward * Time.deltaTime * movementSpeed;
+                    movement1 = "Backwards";
+                }
                 if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+                {
                     rb.AddForce(transform.up * jumpAmount, ForceMode.Impulse);
+                }
+                animator.runtimeAnimatorController = Resources.Load(animationPath + movement0 + movement1 + movement2) as RuntimeAnimatorController;
             }
             else if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
             {
@@ -107,8 +114,10 @@ public class Player : MonoBehaviour
                 transform.Rotate(0, 1 * rotateSpeed, 0);
 
             //Player idling
-            if (!Input.anyKey && isGrounded)
+            if (isGrounded && this.animator.GetCurrentAnimatorStateInfo(0).IsName("Idle01") ||
+                    Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.S))
                 animator.runtimeAnimatorController = Resources.Load(animationPath+"Idle") as RuntimeAnimatorController;
+            
         }
     }
 }
