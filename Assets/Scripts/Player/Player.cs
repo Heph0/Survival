@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     private float sprintSpeed;
     public bool isGrounded;
 
-    private string animationPath = "Animation/BasicMotions/AnimationControllers/BasicMotions@";
+    private string animationPath = "Animation/HumanoidBasicMotions/AnimationControllers/BasicMotions@";
 
     // Start is called before the first frame update
     void Start()
