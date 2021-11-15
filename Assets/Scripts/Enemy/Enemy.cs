@@ -10,11 +10,11 @@ public class Enemy : MonoBehaviour
     public GameObject territory; //center of the territory
     private GameObject heading;
     
-    public string dest = "";
-    private string animationPath = "";
+    private string dest = "";
+    private string animationPath = "Animation/MetalonBasicMotions/AnimationControllers/BasicMotions@";
 
-    public float dist;
-    public float moveSpeed;
+    private float dist;
+    private float moveSpeed;
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +61,7 @@ public class Enemy : MonoBehaviour
                         }
                     }
                 }
-                if (distance < 2F)  //head to the next area 
+                if (distance < 3F)  //head to the next area 
                 {
                     int areaNum = int.Parse(dest.Substring(dest.Length - 1));
                     if (areaNum == 3)
@@ -76,7 +76,7 @@ public class Enemy : MonoBehaviour
             //patrolling around a area
             {
                 FindTarget(dest);
-                if (dist < 2F)  //head to the next area 
+                if (dist < 3F)  //head to the next area 
                 {
                     int areaNum = int.Parse(dest.Substring(dest.Length - 1));
                     if (areaNum == 3)
@@ -105,7 +105,7 @@ public class Enemy : MonoBehaviour
             //https://docs.unity3d.com/ScriptReference/Vector3.MoveTowards.html
             transform.position = Vector3.MoveTowards(transform.position, heading.transform.position, moveSpeed * Time.deltaTime);
         }
-        
+        animator.runtimeAnimatorController = Resources.Load(animationPath + "WalkForwards") as RuntimeAnimatorController;
     }
 
     public GameObject FindTarget(string destination)
