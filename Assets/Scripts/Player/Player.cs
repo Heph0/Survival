@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     private float walkSpeed;
     private float sprintSpeed;
     public bool isGrounded;
+    public bool isAlive;
+    public bool isVictory;
 
     private string animationPath = "Animation/HumanoidBasicMotions/AnimationControllers/BasicMotions@";
 
@@ -32,12 +34,17 @@ public class Player : MonoBehaviour
         rotateSpeed = 3.0F;
         movementSpeed = walkSpeed;
         jumpAmount = 5.0F;
+        isAlive = true;
+        isVictory = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Move(); 
+        if (isAlive)
+            Move();
+        else
+            movementSpeed = 0F;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -45,6 +52,10 @@ public class Player : MonoBehaviour
         if (collision.gameObject.name == "PlayArea")
         {
             isGrounded = true;
+        }
+        if (collision.gameObject.tag == "Enemy")
+        {
+            isAlive = false;
         }
     }
 

@@ -14,7 +14,9 @@ public class Enemy : MonoBehaviour
     private string animationPath = "Animation/MetalonBasicMotions/AnimationControllers/BasicMotions@";
 
     private float dist;
-    private float moveSpeed;
+    private float movementSpeed;
+
+    private GameObject player;
 
     // Start is called before the first frame update
     void Start()
@@ -29,70 +31,82 @@ public class Enemy : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         randPos = territory.GetComponent<Transform>().position;
         dist = Mathf.Infinity;
-        moveSpeed = 3.0F;
+        movementSpeed = 3.0F;
+        player = GameObject.Find("Player");
     }
 
     // Update is called once per frame
     void Update()
     {
-        bool playerDetected = FindTarget("Player").name == "Player" && dist < 100F;
-
-        if (playerDetected)
-            heading = FindTarget("Player"); //prioritize player
-        else
+        if (player.GetComponent<Player>().isAlive && !player.GetComponent<Player>().isVictory)
         {
-            if (dest == "") //no programmed destination
-            {   
-                //find the closest territory marker
-                float distance = Mathf.Infinity;
-                GameObject[] areas = GameObject.FindGameObjectsWithTag("patrolArea");
-                Vector3 position = transform.position;
-                foreach (GameObject area in areas)
-                {
-                    if (area != null)
+            bool playerDetected = FindTarget("Player").name == "Player" && dist < 100F;
+
+            if (playerDetected)
+                heading = FindTarget("Player"); //prioritize player
+            else
+            {
+                if (dest == "") //no programmed destination
+                {   
+                    //find the closest territory marker
+                    float distance = Mathf.Infinity;
+                    GameObject[] areas = GameObject.FindGameObjectsWithTag("patrolArea");
+                    Vector3 position = transform.position;
+                    foreach (GameObject area in areas)
                     {
-                        Vector3 diff = area.transform.position - position;
-                        float currDistance = diff.sqrMagnitude;
-                        if (currDistance < distance)
+                        if (area != null)
                         {
-                            dest = area.name;
-                            distance = currDistance;
-                            dist = distance;
+                            Vector3 diff = area.transform.position - position;
+                            float currDistance = diff.sqrMagnitude;
+                            if (currDistance < distance)
+                            {
+                                dest = area.name;
+                                distance = currDistance;
+                                dist = distance;
+                            }
                         }
                     }
+                    if (distance < 3F)  //head to the next area 
+                    {
+                        int areaNum = int.Parse(dest.Substring(dest.Length - 1));
+                        if (areaNum == 3)
+                            areaNum = 0;
+                        else 
+                            areaNum++;
+                        dest = "MetalonRedArea" + areaNum;
+                    }
+                    heading = FindTarget(dest);
                 }
-                if (distance < 3F)  //head to the next area 
+                else
+                //patrolling around a area
                 {
-                    int areaNum = int.Parse(dest.Substring(dest.Length - 1));
-                    if (areaNum == 3)
-                        areaNum = 0;
-                    else 
-                        areaNum++;
-                    dest = "MetalonRedArea" + areaNum;
+                    FindTarget(dest);
+                    if (dist < 3F)  //head to the next area 
+                    {
+                        int areaNum = int.Parse(dest.Substring(dest.Length - 1));
+                        if (areaNum == 3)
+                            areaNum = 0;
+                        else 
+                            areaNum++;
+                        dest = "MetalonRedArea" + areaNum;
+                    }
+                    heading = FindTarget(dest);
                 }
-                heading = FindTarget(dest);
             }
-            else
-            //patrolling around a area
+            
+            if (heading != null)
             {
-                FindTarget(dest);
-                if (dist < 3F)  //head to the next area 
-                {
-                    int areaNum = int.Parse(dest.Substring(dest.Length - 1));
-                    if (areaNum == 3)
-                        areaNum = 0;
-                    else 
-                        areaNum++;
-                    dest = "MetalonRedArea" + areaNum;
-                }
-                heading = FindTarget(dest);
+                Move(heading);
             }
         }
-        
-        if (heading != null)
-        {
-            Move(heading);
-        }
+        else
+            movementSpeed = 0F;
+    }
+    
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name == "Player" && !player.GetComponent<Player>().isVictory)
+            animator.runtimeAnimatorController = Resources.Load(animationPath + "StabAttack") as RuntimeAnimatorController;
     }
 
     public void Move(GameObject heading)
@@ -103,7 +117,7 @@ public class Enemy : MonoBehaviour
             Vector3 headingDirection = heading.transform.position - transform.position;
             transform.rotation = Quaternion.LookRotation(headingDirection, Vector3.up);
             //https://docs.unity3d.com/ScriptReference/Vector3.MoveTowards.html
-            transform.position = Vector3.MoveTowards(transform.position, heading.transform.position, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, heading.transform.position, movementSpeed * Time.deltaTime);
         }
         animator.runtimeAnimatorController = Resources.Load(animationPath + "WalkForwards") as RuntimeAnimatorController;
     }

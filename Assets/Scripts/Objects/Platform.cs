@@ -13,25 +13,31 @@ public class Platform : MonoBehaviour
     private Stopwatch stopWatch;
     //https://docs.unity3d.com/2017.3/Documentation/ScriptReference/UI.Text-text.html
     public Text timerHUD;
+    //https://docs.microsoft.com/en-us/dotnet/api/system.timespan?view=net-5.0
+    public TimeSpan ts;
+
+    private GameObject player;
 
     // Start is called before the first frame update
     void Start()
     {
         stopWatch = new Stopwatch();
         timerHUD.text = "RunTime: 00:00:00.00";
+        player = GameObject.Find("Player");
     }
 
     // Update is called once per frame
     void Update()
     {
-        //https://docs.microsoft.com/en-us/dotnet/api/system.timespan?view=net-5.0
-        TimeSpan ts = stopWatch.Elapsed;
-
-        // Format and display the TimeSpan value.
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-        timerHUD.text = "RunTime: " + elapsedTime;
+        if (player.GetComponent<Player>().isAlive && !player.GetComponent<Player>().isVictory)
+        {
+            ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            timerHUD.text = "RunTime: " + elapsedTime;
+        }
     }
 
     void OnCollisionEnter(Collision collision)
