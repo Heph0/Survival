@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isAlive)
+        if (isAlive && !isVictory)
             Move();
         else
             movementSpeed = 0F;
