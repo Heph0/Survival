@@ -8,8 +8,9 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public Text winOrLoseText;
+    public Text winLoseText;
     public Text timerText;
+    public GameObject winLoseMenu;
 
     private TimeSpan winConditionTimer;
     private string result;
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        winOrLoseText.gameObject.SetActive(false);
+        winLoseMenu.gameObject.SetActive(false);
         result = "";
         winConditionTimer = new TimeSpan(0,0,30);    //30 seconds
         player = GameObject.Find("Player");
@@ -26,9 +27,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        winOrLoseText.gameObject.SetActive(Victory());
+        winLoseMenu.gameObject.SetActive(Victory());
         player.GetComponent<Player>().isVictory = Victory();
-        winOrLoseText.text = result;
+        winLoseText.text = result;
     }
 
     bool Victory()
