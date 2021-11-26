@@ -1,8 +1,11 @@
+# Ignores build files
+[Ss]urvival_v*
+[Bb]uild/
+[Bb]uilds/
+
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
-[Bb]uild/
-[Bb]uilds/
 [Ll]ogs/
 [Pp]ackages/
 [Pp]rojectSettings/
@@ -12,6 +15,7 @@
 # Uncomment this line if you wish to ignore the asset store tools plugin
 [Aa]ssets/AssetStoreTools*
 [Aa]ssets/Plugins*
+[Aa]ssets/Resources*
 
 # Visual Studio cache directory
 .vs/
